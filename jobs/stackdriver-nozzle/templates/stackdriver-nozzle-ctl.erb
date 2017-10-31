@@ -31,6 +31,7 @@ case $1 in
     export FIREHOSE_NEWLINE_TOKEN=<%= p('firehose.newline_token', '') %>
 
     export DEBUG_NOZZLE=<%= p('nozzle.debug', 'false') %>
+    export METRICS_BUFFER_SIZE=1
     export RESOLVE_APP_METADATA=<%= p('nozzle.resolve_app_metadata', 'true') %>
 
     <% if_p('gcp.project_id') do |prop| %>

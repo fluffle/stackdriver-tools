@@ -23,18 +23,27 @@ type MetricEvent struct {
 	Type    events.Envelope_EventType `json:"-"`
 }
 
-func (m *MetricEvent) Hash() string {
+// Hash returns a string fingerprint that can be used to dedupe MetricEvents.
+// A MetricEvent with the same Hash may have different values and timestams
+// to other MetricEvents with the same hash.
+func (me *MetricEvent) Hash() string {
 	var b bytes.Buffer
 
+	// Write all metric names.
+	for _, m := range me.Metrics {
+		b.WriteString(m.Name)
+	}
+
 	// Extract keys to a slice and sort it
-	keys := make([]string, len(m.Labels), len(m.Labels))
-	for k, _ := range m.Labels {
+	keys := make([]string, len(me.Labels), len(me.Labels))
+	for k, _ := range me.Labels {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
+	// Write sorted kv pairs.
 	for _, k := range keys {
-		b.Write([]byte(k))
-		b.Write([]byte(m.Labels[k]))
+		b.WriteString(k)
+		b.WriteString(me.Labels[k])
 	}
 	return b.String()
 }
